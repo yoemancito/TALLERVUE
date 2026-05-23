@@ -1,3 +1,19 @@
+
+
+/* PREVENIR DESPLAZAMIENTO HORIZONTAL GLOBAL */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 :root {
   --primary: #d4a373;
   --dark: #1a1a1a;
@@ -6,7 +22,6 @@
 }
 
 body {
-  margin: 0;
   font-family: 'Poppins', sans-serif;
   background: var(--bg);
   color: var(--dark);
@@ -23,6 +38,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
 }
 
 .brand h1 {
@@ -63,6 +79,7 @@ body {
   margin: 30px auto;
   gap: 30px;
   padding: 0 20px;
+  width: 100%;
 }
 
 /* CARRITO */
@@ -277,78 +294,121 @@ body {
 }
 
 @keyframes bounce {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-20px);
-  }
+  from { transform: translateY(0); }
+  to { transform: translateY(-20px); }
 }
 
-/* MEDIA QUERIES PARA RESPONSIVIDAD COMPLETA (MÓVILES) */
+/* ADAPTACIÓN PARA TABLETAS */
 @media (max-width: 900px) {
   .content {
     grid-template-columns: 1fr;
     margin: 15px auto;
     gap: 20px;
+    padding: 0 15px;
   }
-
   .cart-sidebar {
     position: relative;
     top: 0;
   }
 }
 
+/* ADAPTACIÓN FIJA PARA DISPOSITIVOS MÓVILES */
 @media (max-width: 600px) {
+  .main-app {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Rediseño superior limpio sin desbordamiento */
   .navbar {
     flex-direction: column;
-    gap: 15px;
-    padding: 15px 20px;
+    gap: 12px;
+    padding: 12px 15px;
+    box-sizing: border-box;
+    align-items: center;
+  }
+
+  .brand {
     text-align: center;
   }
 
+  .brand h1 {
+    font-size: 1.5rem; /* Título ligeramente más pequeño para evitar saltos raros */
+  }
+
+  /* Contenedor de botones optimizado con scroll táctil sin romper el layout */
   .tabs {
     width: 100%;
-    justify-content: center;
+    max-width: 100%;
+    justify-content: flex-start;
     overflow-x: auto;
-    padding-bottom: 5px;
+    white-space: nowrap;
+    padding: 4px 10px 8px 10px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ocultar barra de scroll física en las pestañas para mejorar estética */
+  .tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .tabs button {
-    padding: 8px 15px;
-    font-size: 0.9rem;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    display: inline-block;
     flex-shrink: 0;
   }
 
+  /* Filas de productos transformadas en tarjetas perfectas */
   .product-row {
     flex-direction: column;
+    width: 100%;
   }
 
   .img-wrapper {
     width: 100%;
-    height: 180px;
+    height: 160px;
+  }
+
+  .details {
+    padding: 12px;
   }
 
   .title-price {
-    flex-direction: row;
-    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 10px;
-    margin-bottom: 8px;
   }
 
   .title-price h4 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .tag {
+    font-size: 0.95rem;
+    white-space: nowrap;
   }
 
   .add-row-btn {
     width: 100%;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 12px;
+    padding: 10px;
   }
 
+  /* Caja del carrito adaptada al ancho de pantalla */
+  .cart-box {
+    padding: 15px;
+  }
+
+  /* Modal de éxito */
   .success-card {
-    width: 85%;
+    width: 90%;
+    max-width: 320px;
     padding: 20px;
   }
 }

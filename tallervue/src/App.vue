@@ -63,7 +63,7 @@ const lista = ref([
   // =========================
   { id: 21, n: 'Tiramisú Casero', p: 15000, c: 'postres', d: 'Bizcocho empapado en café y mascarpone.', img: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400' },
 
-  { id: 22, n: 'Cheesecake Frutos', p: 14500, c: 'postres', d: 'Tarta de queso horneada con mermelada.', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400' },
+  { id: 22, n: 'Cheesecake Frutos', p: 14500, c: 'postres', d: 'Tarta de queso horneada con mermelada.', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad p: 14500', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400' },
 
   { id: 23, n: 'Waffle con Nutella', p: 17000, c: 'postres', d: 'Recién hecho, crujiente y dulce.', img: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?w=400' },
 
@@ -101,63 +101,34 @@ const quitar = (idx) => {
 
 // CONFIRMAR PEDIDO + PDF
 const confirmar = () => {
-
   if (carrito.value.length === 0) {
     alert("El carrito está vacío")
     return
   }
-
   verConfirmacion.value = true
 
-  // GENERAR PDF
   const doc = new jsPDF()
-
   doc.setFontSize(24)
   doc.text("AMALIA GELATO", 20, 20)
-
   doc.setFontSize(13)
   doc.text("Factura de compra", 20, 30)
-
   const fecha = new Date().toLocaleString()
-
   doc.text(`Fecha: ${fecha}`, 20, 40)
-
   doc.line(20, 45, 190, 45)
 
   let y = 55
-
   carrito.value.forEach((item, index) => {
-    doc.text(
-      `${index + 1}. ${item.n} - $${item.p.toLocaleString()}`,
-      20,
-      y
-    )
-
+    doc.text(`${index + 1}. ${item.n} - $${item.p.toLocaleString()}`, 20, y)
     y += 10
   })
 
   doc.line(20, y, 190, y)
-
   y += 10
-
   doc.setFontSize(15)
-
-  doc.text(
-    `TOTAL PAGADO: $${total.value.toLocaleString()}`,
-    20,
-    y
-  )
-
+  doc.text(`TOTAL PAGADO: $${total.value.toLocaleString()}`, 20, y)
   y += 20
-
   doc.setFontSize(11)
-
-  doc.text(
-    "Gracias por comprar en Amalia Gelato ☕🍨",
-    20,
-    y
-  )
-
+  doc.text("Gracias por comprar en Amalia Gelato ☕🍨", 20, y)
   doc.save("factura-amalia.pdf")
 }
 
@@ -170,9 +141,7 @@ const limpiar = () => {
 </script>
 
 <template>
-
   <div class="main-app">
-
     <!-- LOADER -->
     <div v-if="cargando" class="full-loader">
       <div class="logo-anim">A</div>
@@ -181,7 +150,6 @@ const limpiar = () => {
 
     <!-- NAVBAR -->
     <header class="navbar">
-
       <div class="brand">
         <h1>🗿 GELATO</h1>
         <span>Café & Gelato</span>
@@ -209,24 +177,19 @@ const limpiar = () => {
           Postres
         </button>
       </div>
-
     </header>
 
     <!-- CONTENIDO -->
     <div class="content">
-
       <!-- CARRITO -->
       <aside class="cart-sidebar">
-
         <div class="cart-box">
-
           <div class="cart-header">
             <h3>TU SELECCIÓN</h3>
             <span class="count">{{ carrito.length }} items</span>
           </div>
 
           <div class="cart-list">
-
             <p v-if="carrito.length === 0" class="empty-txt">
               Elige algo delicioso del menú
             </p>
@@ -236,158 +199,88 @@ const limpiar = () => {
               :key="i"
               class="cart-item"
             >
-
               <div class="item-info">
                 <strong>{{ item.n }}</strong>
                 <p>${{ item.p.toLocaleString() }}</p>
               </div>
 
-              <button
-                @click="quitar(i)"
-                class="del-btn"
-              >
-                ✕
-              </button>
-
+              <button @click="quitar(i)" class="del-btn">✕</button>
             </div>
-
           </div>
 
           <div class="cart-footer">
-
             <div class="total-row">
               <span>Total a pagar</span>
               <strong>${{ total.toLocaleString() }}</strong>
             </div>
 
-            <button
-              @click="confirmar"
-              class="confirm-btn"
-            >
+            <button @click="confirmar" class="confirm-btn">
               PEDIR AHORA
             </button>
-
           </div>
-
         </div>
-
       </aside>
 
       <!-- PRODUCTOS -->
       <section class="menu-display">
-
         <h2 class="category-name">
           Menú: {{ categoria }}
         </h2>
 
         <div class="rows-container">
-
-          <template
-            v-for="p in lista"
-            :key="p.id"
-          >
-
-            <div
-              v-if="p.c === categoria"
-              class="product-row"
-            >
-
+          <template v-for="p in lista" :key="p.id">
+            <div v-if="p.c === categoria" class="product-row">
               <div class="img-wrapper">
                 <img :src="p.img" alt="">
               </div>
 
               <div class="details">
-
                 <div class="title-price">
                   <h4>{{ p.n }}</h4>
-                  <span class="tag">
-                    ${{ p.p.toLocaleString() }}
-                  </span>
+                  <span class="tag">${{ p.p.toLocaleString() }}</span>
                 </div>
 
-                <p class="description">
-                  {{ p.d }}
-                </p>
+                <p class="description">{{ p.d }}</p>
 
-                <button
-                  @click="añadir(p)"
-                  class="add-row-btn"
-                >
+                <button @click="añadir(p)" class="add-row-btn">
                   AÑADIR AL CARRITO
                 </button>
-
               </div>
-
             </div>
-
           </template>
-
         </div>
-
       </section>
-
     </div>
 
     <!-- CONFIRMACIÓN -->
-    <div
-      v-if="verConfirmacion"
-      class="overlay"
-    >
-
+    <div v-if="verConfirmacion" class="overlay">
       <div class="success-card">
-
         <div class="success-icon">✓</div>
-
         <h2>¡Orden Recibida!</h2>
-
-        <p>
-          Estamos preparando tu pedido en Amalia.
-        </p>
+        <p>Estamos preparando tu pedido en Amalia.</p>
 
         <div class="order-details-box">
-
           <div class="order-scroll">
-
             <div
               v-for="(i, idx) in carrito"
               :key="idx"
               class="summary-line"
             >
-
               <span>{{ i.n }}</span>
-
-              <span>
-                ${{ i.p.toLocaleString() }}
-              </span>
-
+              <span>${{ i.p.toLocaleString() }}</span>
             </div>
-
           </div>
 
           <div class="final-total">
-
             <span>TOTAL CANCELADO</span>
-
-            <span>
-              ${{ total.toLocaleString() }}
-            </span>
-
+            <span>${{ total.toLocaleString() }}</span>
           </div>
-
         </div>
 
-        <button
-          @click="limpiar"
-          class="done-btn"
-        >
+        <button @click="limpiar" class="done-btn">
           VOLVER AL MENÚ
         </button>
-
       </div>
-
     </div>
-
   </div>
-
 </template>
-
