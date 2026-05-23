@@ -9,6 +9,15 @@ const carrito = ref([])
 const total = ref(0)
 const verConfirmacion = ref(false)
 
+// NUEVO ESTADO PARA FORMULARIO DE AGREGAR PRODUCTO
+const nuevoProducto = ref({
+  n: '',
+  p: null,
+  c: 'helados', // Categoría por defecto al abrir el panel
+  d: '',
+  img: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400' // Imagen por defecto
+})
+
 // PRODUCTOS
 const lista = ref([
 
@@ -63,7 +72,7 @@ const lista = ref([
   // =========================
   { id: 21, n: 'Tiramisú Casero', p: 15000, c: 'postres', d: 'Bizcocho empapado en café y mascarpone.', img: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400' },
 
-  { id: 22, n: 'Cheesecake Frutos', p: 14500, c: 'postres', d: 'Tarta de queso horneada con mermelada.', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad p: 14500', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400' },
+  { id: 22, n: 'Cheesecake Frutos', p: 14500, c: 'postres', d: 'Tarta de queso horneada con mermelada.', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400' },
 
   { id: 23, n: 'Waffle con Nutella', p: 17000, c: 'postres', d: 'Recién hecho, crujiente y dulce.', img: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?w=400' },
 
@@ -87,16 +96,42 @@ setTimeout(() => {
   cargando.value = false
 }, 800)
 
-// AÑADIR
+// AÑADIR AL CARRITO
 const añadir = (p) => {
   carrito.value.push(p)
   total.value += p.p
 }
 
-// QUITAR
+// QUITAR DEL CARRITO
 const quitar = (idx) => {
   total.value -= carrito.value[idx].p
   carrito.value.splice(idx, 1)
+}
+
+// NUEVA FUNCIÓN: AGREGAR PRODUCTO AL MENÚ GENERAL
+const agregarProductoMenu = () => {
+  if (!nuevoProducto.value.n || !nuevoProducto.value.p) {
+    alert("Por favor ingrese el nombre y el precio del producto.");
+    return;
+  }
+
+  // Generamos un id calculando el máximo actual + 1
+  const nuevoId = lista.value.length > 0 ? Math.max(...lista.value.map(prod => prod.id)) + 1 : 1;
+
+  // Insertamos en el array reactivo
+  lista.value.push({
+    id: nuevoId,
+    n: nuevoProducto.value.n,
+    p: Number(nuevoProducto.value.p),
+    c: nuevoProducto.value.c,
+    d: nuevoProducto.value.d || 'Sin descripción.',
+    img: nuevoProducto.value.img || 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400'
+  });
+
+  // Limpiamos los campos del formulario para un nuevo registro
+  nuevoProducto.value.n = '';
+  nuevoProducto.value.p = null;
+  nuevoProducto.value.d = '';
 }
 
 // CONFIRMAR PEDIDO + PDF
@@ -223,6 +258,27 @@ const limpiar = () => {
 
       <!-- PRODUCTOS -->
       <section class="menu-display">
+        
+        <!-- SECCIÓN INCORPORADA: FORMULARIO PARA AGREGAR NUEVOS PRODUCTOS -->
+        <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #eee;">
+          <h3 style="margin-top: 0; color: var(--dark);">➕ Registrar Nuevo Producto</h3>
+          <form @submit.prevent="agregarProductoMenu" style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input v-model="nuevoProducto.n" type="text" placeholder="Nombre del producto" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required />
+              <input v-model="nuevoProducto.p" type="number" placeholder="Precio ($)" style="width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required />
+              <select v-model="nuevoProducto.c" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                <option value="helados">Helados</option>
+                <option value="cafes">Cafetería</option>
+                <option value="postres">Postres</option>
+              </select>
+            </div>
+            <input v-model="nuevoProducto.d" type="text" placeholder="Descripción corta (Opcional)" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
+            <button type="submit" style="background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+              AGREGAR AL MENÚ
+            </button>
+          </form>
+        </div>
+
         <h2 class="category-name">
           Menú: {{ categoria }}
         </h2>
@@ -283,4 +339,6 @@ const limpiar = () => {
       </div>
     </div>
   </div>
-</template> 
+</template>
+
+
