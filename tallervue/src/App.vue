@@ -80,13 +80,6 @@ const lista = ref([
   { id: 29, n: 'Profiteroles', p: 12500, c: 'postres', d: 'Rellenos de crema y bañados en chocolate.', img: 'https://images.unsplash.com/photo-1488477304112-4944851de03d?w=400' },
 
   { id: 30, n: 'Apple Pie', p: 11500, c: 'postres', d: 'Manzanas canela en masa hojaldrada.', img: 'https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=400' }
-
-
-
-
-
-
-
 ])
 
 // LOADER
@@ -397,3 +390,4 @@ const limpiar = () => {
   </div>
 
 </template>
+
