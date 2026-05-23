@@ -16,8 +16,8 @@ const nuevoProducto = ref({
   c: 'helados', 
   d: '',
   img: '' 
-})
-
+}) 
+ 
 // PRODUCTOS
 const lista = ref([
   // =========================
