@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { jsPDF } from "jspdf"
 
 // ESTADOS
@@ -8,6 +8,7 @@ const categoria = ref('helados')
 const carrito = ref([])
 const total = ref(0)
 const verConfirmacion = ref(false)
+const mostrarCarritoMovil = ref(false) // Controla si el carrito flotante está abierto en móvil
 
 // ESTADO PARA FORMULARIO DE AGREGAR PRODUCTO
 const nuevoProducto = ref({
@@ -16,8 +17,8 @@ const nuevoProducto = ref({
   c: 'helados', 
   d: '',
   img: '' 
-}) 
- 
+})
+
 // PRODUCTOS
 const lista = ref([
   // =========================
@@ -42,7 +43,7 @@ const lista = ref([
   { id: 13, n: 'Cappuccino Tradicional', p: 9000, c: 'cafes', d: 'Equilibrio perfecto entre café y espuma.', img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=400' },
   { id: 14, n: 'Espresso Sencillo', p: 5500, c: 'cafes', d: 'Energía pura en una taza pequeña.', img: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400' },
   { id: 15, n: 'Mocaccino Dark', p: 12500, c: 'cafes', d: 'Café con chocolate amargo al 70%.', img: 'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=400' },
-  { id: 16, n: 'Affogato Espresso', p: 14000, c: 'cafes', d: 'El puente entre helado y café.', img: 'https://media.istockphoto.com/id/2211116873/es/foto/affogato-espresso-audaz-vertido-sobre-helado-de-vainilla-servido-en-un-vaso-sobre-un-fondo.jpg?s=612x612&w=0&k=20&c=DOUKBF3Q0CU8intTG0y40b25Kud-d-PqyDO77fO4rJ4=' },
+  { id: 16, n: 'Affogato Espresso', p: 14000, c: 'cafes', d: 'El puente entre helado y café.', img: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1f0f3?w=400' },
   { id: 17, n: 'Cold Brew Citrus', p: 11000, c: 'cafes', d: 'Café frío con rodajas de naranja.', img: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400' },
   { id: 18, n: 'Americano de Origen', p: 6000, c: 'cafes', d: 'Café suave con notas frutales.', img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400' },
   { id: 19, n: 'Frappé Cookies', p: 16500, c: 'cafes', d: 'Granizado de café con galleta oreo.', img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400' },
@@ -63,12 +64,17 @@ const lista = ref([
   { id: 30, n: 'Apple Pie', p: 11500, c: 'postres', d: 'Manzanas canela en masa hojaldrada.', img: 'https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=400' }
 ])
 
+// CÓMPUTO TOTAL DE ITEMS (Suma de todas las cantidades)
+const totalItems = computed(() => {
+  return carrito.value.reduce((acc, item) => acc + item.cantidad, 0)
+})
+
 // LOADER
 setTimeout(() => {
   cargando.value = false
 }, 800)
 
-// AÑADIR AL CARRITO (Suma cantidad si ya existe)
+// AÑADIR AL CARRITO
 const añadir = (p) => {
   const itemExistente = carrito.value.find(item => item.id === p.id)
   
@@ -83,7 +89,7 @@ const añadir = (p) => {
   total.value += p.p
 }
 
-// QUITAR DEL CARRITO (Resta 1 a la cantidad, si llega a 0 lo elimina)
+// QUITAR DEL CARRITO
 const quitar = (idx) => {
   const item = carrito.value[idx]
   total.value -= item.p
@@ -119,13 +125,14 @@ const agregarProductoMenu = () => {
   nuevoProducto.value.img = '';
 }
 
-// CONFIRMAR PEDIDO + PDF (Agrupado por cantidades)
+// CONFIRMAR PEDIDO + PDF
 const confirmar = () => {
   if (carrito.value.length === 0) {
     alert("El carrito está vacío")
     return
   }
   verConfirmacion.value = true
+  mostrarCarritoMovil.value = false // Cierra la pestaña en móvil si estaba abierta
 
   const doc = new jsPDF()
   doc.setFontSize(24)
@@ -197,11 +204,17 @@ const limpiar = () => {
     </header>
 
     <div class="content">
-      <aside class="cart-sidebar">
+      
+      <aside class="cart-sidebar" :class="{ 'movil-abierto': mostrarCarritoMovil }">
+        <div class="cart-backdrop" @click="mostrarCarritoMovil = false"></div>
+        
         <div class="cart-box">
-          <div class="cart-header">
-            <h3>TU SELECCIÓN</h3>
-            <span class="count">{{ carrito.reduce((acc, item) => acc + item.cantidad, 0) }} items</span>
+          <div class="cart-header" @click="mostrarCarritoMovil = !mostrarCarritoMovil">
+            <div class="header-main-title">
+              <h3>TU SELECCIÓN</h3>
+              <span class="count">{{ totalItems }} items</span>
+            </div>
+            <span class="toggle-indicator">🛒 Ver Cuenta: <b>${{ total.toLocaleString() }}</b> ↕️</span>
           </div>
 
           <div class="cart-list">
@@ -233,6 +246,14 @@ const limpiar = () => {
           </div>
         </div>
       </aside>
+
+      <div v-if="totalItems > 0 && !mostrarCarritoMovil" class="mobile-fixed-bar" @click="mostrarCarritoMovil = true">
+        <div class="fixed-bar-info">
+          <span class="badge-fixed">{{ totalItems }}</span>
+          <span>Ver Carrito</span>
+        </div>
+        <strong>${{ total.toLocaleString() }} ➔</strong>
+      </div>
 
       <section class="menu-display">
         

@@ -80,11 +80,16 @@ body {
   width: 100%;
 }
 
-/* CARRITO */
+/* CARRITO EN COMPUTADORA */
 .cart-sidebar {
   position: sticky;
   top: 100px;
   height: fit-content;
+  z-index: 90;
+}
+
+.cart-backdrop {
+  display: none; /* Oculto en PC */
 }
 
 .cart-box {
@@ -94,10 +99,15 @@ body {
   padding: 25px;
 }
 
-.cart-header {
+.header-main-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+}
+
+.toggle-indicator {
+  display: none; /* Oculto en PC */
 }
 
 .count {
@@ -240,6 +250,11 @@ body {
   font-weight: bold;
 }
 
+/* BARRA DE ACCESO FIJA MÓVIL */
+.mobile-fixed-bar {
+  display: none;
+}
+
 /* CONFIRMACIÓN */
 .overlay {
   position: fixed;
@@ -248,6 +263,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 200;
 }
 
 .success-card {
@@ -317,6 +333,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 300;
 }
 
 .logo-anim {
@@ -350,11 +367,12 @@ body {
   }
 }
 
-/* ADAPTACIÓN FIJA PARA DISPOSITIVOS MÓVILES */
+/* COMPORTAMIENTO FIJO DE FACTURA EN MÓVILES */
 @media (max-width: 600px) {
   .main-app {
     width: 100vw;
     overflow-x: hidden;
+    padding-bottom: 80px; /* Margen abajo para que la barra fija no tape contenido */
   }
 
   .navbar {
@@ -395,6 +413,106 @@ body {
     flex-shrink: 0;
   }
 
+  /* NUEVA LÓGICA DEL CARRITO EN MÓVIL: Flotante e inferior */
+  .cart-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 150;
+    transform: translateY(100%); /* Oculto por defecto abajo */
+    transition: transform 0.4s ease;
+  }
+
+  /* Cuando se activa el estado, sube fluidamente */
+  .cart-sidebar.movil-abierto {
+    transform: translateY(0);
+  }
+
+  /* Backdrop oscuro para cuando el carrito está desplegado */
+  .cart-sidebar.movil-abierto .cart-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+    height: 100vh;
+    transform: translateY(-100vh);
+  }
+
+  .cart-box {
+    border-radius: 25px 25px 0 0; /* Bordes redondeados arriba */
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+    padding: 20px;
+    max-height: 80vh; /* Máximo alto de pantalla */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-header {
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .header-main-title {
+    display: none; /* Se oculta el título clásico en móvil */
+  }
+
+  .toggle-indicator {
+    display: block;
+    text-align: center;
+    width: 100%;
+    font-size: 1rem;
+    color: var(--dark);
+  }
+
+  .cart-list {
+    flex: 1;
+    max-height: 40vh; /* Zona de scroll interna controlada */
+  }
+
+  /* BARRA FIJA INFERIOR (Vista resumida clásica de app de comida) */
+  .mobile-fixed-bar {
+    display: flex;
+    position: fixed;
+    bottom: 15px;
+    left: 5%;
+    width: 90%;
+    background: var(--dark);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 16px;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    z-index: 140;
+    cursor: pointer;
+    animation: slideUp 0.3s ease;
+  }
+
+  .fixed-bar-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+  }
+
+  .badge-fixed {
+    background: var(--primary);
+    color: white;
+    padding: 2px 9px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* PRODUCTOS EN MÓVIL */
   .product-row {
     flex-direction: column;
     width: 100%;
@@ -442,13 +560,10 @@ body {
     font-size: 0.85rem;
   }
 
-  .cart-box {
-    padding: 15px;
-  }
-
   .success-card {
     width: 90%;
     max-width: 320px;
     padding: 20px;
   }
 }
+
