@@ -10,6 +10,18 @@ const total = ref(0)
 const verConfirmacion = ref(false)
 const mostrarCarritoMovil = ref(false) // Controla si el carrito flotante está abierto en móvil
 
+// ESTADO PARA ALERTAS PERSONALIZADAS
+const alertCustom = ref({
+  mostrar: false,
+  mensaje: ''
+})
+
+// FUNCIÓN PARA DISPARAR ALERTA PROPIA
+const mostrarAlerta = (msg) => {
+  alertCustom.value.mensaje = msg
+  alertCustom.value.mostrar = true
+}
+
 // ESTADO PARA FORMULARIO DE AGREGAR PRODUCTO
 const nuevoProducto = ref({
   n: '',
@@ -103,8 +115,9 @@ const quitar = (idx) => {
 
 // AGREGAR PRODUCTO AL MENÚ GENERAL
 const agregarProductoMenu = () => {
+  // AJUSTE: Si no viene nombre o no viene precio, se dispara tu alerta personalizada
   if (!nuevoProducto.value.n || !nuevoProducto.value.p) {
-    alert("Por favor ingrese el nombre y el precio del producto.");
+    mostrarAlerta("Por favor ingrese el nombre y el precio del producto.");
     return;
   }
 
@@ -128,7 +141,7 @@ const agregarProductoMenu = () => {
 // CONFIRMAR PEDIDO + PDF
 const confirmar = () => {
   if (carrito.value.length === 0) {
-    alert("El carrito está vacío")
+    mostrarAlerta("El carrito está vacío")
     return
   }
   verConfirmacion.value = true
@@ -261,8 +274,8 @@ const limpiar = () => {
           <h3 style="margin-top: 0; color: var(--dark);">➕ Registrar Nuevo Producto</h3>
           <form @submit.prevent="agregarProductoMenu" style="display: flex; flex-direction: column; gap: 10px;">
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input v-model="nuevoProducto.n" type="text" placeholder="Nombre del producto" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required />
-              <input v-model="nuevoProducto.p" type="number" placeholder="Precio ($)" style="width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" required />
+              <input v-model="nuevoProducto.n" type="text" placeholder="Nombre del producto" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
+              <input v-model="nuevoProducto.p" type="number" placeholder="Precio ($)" style="width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" />
               <select v-model="nuevoProducto.c" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
                 <option value="helados">Helados</option>
                 <option value="cafes">Cafetería</option>
@@ -310,7 +323,7 @@ const limpiar = () => {
       <div class="success-card">
         <div class="success-icon">✓</div>
         <h2>¡Orden Recibida!</h2>
-        <p>Estamos preparando tu pedido en Amalia.</p>
+        <p>Estamos preparing tu pedido en Amalia.</p>
 
         <div class="order-details-box">
           <div class="order-scroll">
@@ -335,6 +348,14 @@ const limpiar = () => {
         </button>
       </div>
     </div>
+
+    <div v-if="alertCustom.value?.mostrar || alertCustom.mostrar" class="alert-overlay">
+      <div class="alert-card">
+        <div class="alert-icon">⚠️</div>
+        <h3>Atención</h3>
+        <p>{{ alertCustom.mensaje }}</p>
+        <button @click="alertCustom.mostrar = false" class="alert-btn">ENTENDIDO</button>
+      </div>
+    </div>
   </div>
 </template>
-
